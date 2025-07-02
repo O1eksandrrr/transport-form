@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Форма для перевізника</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+    label {
+      display: block;
+      margin-top: 10px;
+    }
+    input {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+      box-sizing: border-box;
+    }
+    .result {
+      margin-top: 15px;
+      font-weight: bold;
+    }
+    button {
+      margin-top: 20px;
+      padding: 10px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+  </style>
+</head>
+<body>
+
+  <form id="priceForm">
+    <label>
+      Вартість подачі автомобіля, грн:
+      <input type="number" id="carDelivery" placeholder="400" required>
+    </label>
+
+    <label>
+      Вартість за годину, грн:
+      <input type="number" id="hourlyRate" placeholder="400" required>
+    </label>
+
+    <label>
+      Мінімальна кількість годин:
+      <input type="number" id="minHours" placeholder="2" required>
+    </label>
+
+    <div class="result">
+      Мінімальне замовлення: <span id="totalCost">0</span> грн
+    </div>
+
+    <button type="submit">Надіслати</button>
+  </form>
+
+  <script>
+    const carDelivery = document.getElementById('carDelivery');
+    const hourlyRate = document.getElementById('hourlyRate');
+    const minHours = document.getElementById('minHours');
+    const totalCost = document.getElementById('totalCost');
+    const form = document.getElementById('priceForm');
+
+    function calculateTotal() {
+      const delivery = parseFloat(carDelivery.value) || 0;
+      const rate = parseFloat(hourlyRate.value) || 0;
+      const hours = parseFloat(minHours.value) || 0;
+      const total = (rate * hours) + delivery;
+      totalCost.textContent = total.toFixed(2);
+    }
+
+    carDelivery.addEventListener('input', calculateTotal);
+    hourlyRate.addEventListener('input', calculateTotal);
+    minHours.addEventListener('input', calculateTotal);
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const payload = {
+        carDelivery: carDelivery.value,
+        hourlyRate: hourlyRate.value,
+        minHours: minHours.value,
+        totalCost: totalCost.textContent
+      };
+
+      try {
+        await fetch('https://your-n8n-webhook-url', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(payload)
+        });
+        alert('Форма надіслана успішно!');
+      } catch (error) {
+        alert('Помилка при надсиланні форми.');
+      }
+    });
+  </script>
+
+</body>
+</html>
