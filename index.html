@@ -29,7 +29,7 @@
       margin-bottom: 6px;
       font-weight: 600;
     }
-    input {
+    input[type="number"] {
       width: 100%;
       padding: 12px;
       border: 1px solid #CCC;
@@ -71,6 +71,16 @@
       background: #218838;
       transform: translateY(-2px);
     }
+    .checkbox-container {
+      margin-top: 20px;
+      display: none;
+    }
+    .checkbox-container label {
+      font-weight: normal;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
   </style>
 </head>
 <body>
@@ -92,6 +102,13 @@
         <input type="number" id="minHours" placeholder="2" required>
       </div>
 
+      <div class="checkbox-container" id="saveDefaultContainer">
+        <label>
+          <input type="checkbox" id="saveDefault">
+          Зберегти як основний тариф
+        </label>
+      </div>
+
       <div class="total-box">
         Мінімальне замовлення: <span id="totalCost">0</span> грн
       </div>
@@ -106,8 +123,8 @@
     const minHours = document.getElementById('minHours');
     const totalCost = document.getElementById('totalCost');
     const form = document.getElementById('priceForm');
+    const saveDefaultContainer = document.getElementById('saveDefaultContainer');
 
-    // Додати приховане поле orderId, якщо він є в URL
     const urlParams = new URLSearchParams(window.location.search);
     const orderId = urlParams.get('orderId');
     if (orderId) {
@@ -116,6 +133,7 @@
       hiddenField.name = 'orderId';
       hiddenField.value = orderId;
       form.appendChild(hiddenField);
+      saveDefaultContainer.style.display = 'block';
     }
 
     function calculateTotal() {
@@ -142,6 +160,7 @@
       };
       if (orderIdInput) {
         payload.orderId = orderIdInput.value;
+        payload.saveAsDefault = document.getElementById('saveDefault').checked;
       }
 
       try {
@@ -153,8 +172,10 @@
           body: JSON.stringify(payload)
         });
         alert('Форма надіслана успішно!');
+        window.close();
       } catch (error) {
         alert('Помилка при надсиланні форми.');
+        window.close();
       }
     });
   </script>
