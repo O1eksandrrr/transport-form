@@ -106,15 +106,16 @@
     const minHours = document.getElementById('minHours');
     const totalCost = document.getElementById('totalCost');
     const form = document.getElementById('priceForm');
+
+    // Додати приховане поле orderId, якщо він є в URL
     const urlParams = new URLSearchParams(window.location.search);
     const orderId = urlParams.get('orderId');
-
     if (orderId) {
       const hiddenField = document.createElement('input');
       hiddenField.type = 'hidden';
       hiddenField.name = 'orderId';
       hiddenField.value = orderId;
-      document.getElementById('priceForm').appendChild(hiddenField);
+      form.appendChild(hiddenField);
     }
 
     function calculateTotal() {
@@ -132,16 +133,16 @@
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
 
+      const orderIdInput = document.querySelector('input[name="orderId"]');
       const payload = {
         carDelivery: carDelivery.value,
         hourlyRate: hourlyRate.value,
         minHours: minHours.value,
         totalCost: totalCost.textContent
-        const orderIdInput = document.querySelector('input[name=\"orderId\"]');
-          if (orderIdInput) {
-            payload.orderId = orderIdInput.value;
-          }
       };
+      if (orderIdInput) {
+        payload.orderId = orderIdInput.value;
+      }
 
       try {
         await fetch('https://firstbs.app.n8n.cloud/webhook/d79ba497-4909-4d4d-b6af-18a0ae191214', {
